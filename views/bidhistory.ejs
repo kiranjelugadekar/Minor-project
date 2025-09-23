@@ -1,0 +1,58 @@
+<% layout('boilerplate')%>
+<%- include('./includes/navbar') %>
+
+<div class="container mt-4">
+    <h2>Bid History (Ended Auctions)</h2>
+    <% if (products.length > 0) { %>
+        <div class="row g-4">
+            <% products.forEach(product => { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 product-card ended">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= product.name %></h5>
+                            <p class="card-text"><%= product.description %></p>
+                            <div class="bid-info mb-2">
+                                <div class="current-bid">
+                                    <strong>Bid Amount:</strong>
+                                    <span class="text-success fs-5">
+                                        ₹<%= product.winningBid %>
+                                    </span>
+                                </div>
+                                <small class="text-muted">
+                                    Bid by <%= product.lastBidder.username %> on <%= product.lastBidTimestamp %>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <span class="badge bg-danger">Auction Ended</span>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <div class="alert alert-info" style="margin-left: 2rem;">No ended auction products found.</div>
+    <% } %>
+</div>
+
+<style>
+/* Styling similar to index.ejs cards */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.product-card.ended {
+    border: 2px solid #c0212f;
+    background: #fff0f0;
+}
+.badge.bg-danger {
+    background-color: #c0212f;
+    color: #fff;
+    font-size: 1rem;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+}
+</style>

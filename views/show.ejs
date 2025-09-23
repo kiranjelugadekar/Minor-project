@@ -1,0 +1,170 @@
+<%- layout('boilerplate') %>
+<script>
+    // Pass server-side variables to client-side JS
+    const auctionStatus = "<%= product.auctionStatus %>";
+    const auctionEndTime = "<%= product.auctionEndTime ? product.auctionEndTime.toISOString ? product.auctionEndTime.toISOString() : product.auctionEndTime : '' %>";
+</script>
+<div class="container mt-4 d-flex justify-content-center">
+    <div class="card w-75">
+        <img src="<%= product.imageUrl %>" class="card-img w-50" alt="Product Image">
+        <div class="card-body">
+            <h3 class="card-title"><%= product.name %></h3>
+            <p><strong>Owner:</strong> 
+                <% if (product.owner) { %>
+                    <%= product.owner.username || 'Unknown User' %>
+                <% } else { %>
+                    Unknown Owner
+                <% } %>
+            </p>
+            <p><strong>Description:</strong><br><%= product.description %></p>
+            <p><strong>Starting Bid:</strong> ₹<%= product.startingBid %></p>
+            <p><strong>Current Bid:</strong> ₹<%= product.currentBid %></p>
+            <p><strong>Quantity:</strong> <%= product.quantity %></p>
+            <p><strong>Category:</strong> <%= product.category %></p>
+            <p><strong>Condition:</strong> <%= product.condition %></p>
+            
+            <!-- Auction Status and Timer -->
+            <% if (product.auctionStatus === 'pending') { %>
+                <div class="auction-status pending">
+                    <span class="status-badge pending">⏳ Waiting for first bid</span>
+                    <p>Auction will start when someone places the first bid</p>
+                </div>
+            <% } else if (product.auctionStatus === 'active') { %>
+                <%if(product.auctionEndTime){ %> 
+                    <div class="countdown-timer" data-end-time="<%= product.auctionEndTime.toISOString() %>">
+                  <% }else{ %>
+                    <div class="countdown-timer" data-end-time="<%= product.auctionEndTime %>">
+                   <% } %>
+                    <h5>Time Remaining:</h5>
+                    <div id="timer-display">
+                        <div class="time-part">
+                            <span id="hours">00</span>
+                            <label>Hours</label>
+                        </div>
+                        <div class="time-part">
+                            <span id="minutes">00</span>
+                            <label>Minutes</label>
+                        </div>
+                        <div class="time-part">
+                            <span id="seconds">00</span>
+                            <label>Seconds</label>
+                        </div>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="auction-ended">
+                    <h4>🔚 Auction Ended</h4>
+                    <% if (product.winner) { %>
+                        <p><strong>Winner:</strong> <%= product.winner.username %></p>
+                        <p><strong>Winning Bid:</strong> ₹<%= product.winningBid %></p>
+                    <% } else { %>
+                        <p>No bids were placed</p>
+                    <% } %>
+                </div>
+            <% } %>
+            
+            <!-- Bidding Section -->
+            <div class="bid-section">
+                <% if (product.auctionStatus !== 'ended') { %>
+                    <% if (currUser && !currUser._id.equals(product.owner._id) && currUser.userType !== 'admin') { %>
+                        <form action="/products/<%= product._id %>/bid" method="POST">
+                            <div class="form-group mb-3">
+                                <label>
+                                    <% if (product.auctionStatus === 'pending') { %>
+                                        Your Bid Amount (₹) - Start the Auction!
+                                    <% } else { %>
+                                        Your Bid Amount (₹)
+                                    <% } %>
+                                </label>
+                                <input type="number" 
+                                       name="amount" 
+                                       class="form-control" 
+                                       min="<%= (product.currentBid || product.startingBid) + 50 %>"
+                                       placeholder="Enter amount greater than ₹<%= product.currentBid || product.startingBid %>"
+                                       required>
+                            </div>
+                            <% if (product.auctionStatus === 'pending') { %>
+                                <button type="submit" class="btn btn-success">Place First Bid & Start Auction!</button>
+                            <% } else { %>
+                                <button type="submit" class="btn btn-primary">Place Bid</button>
+                            <% } %>
+                        </form>
+                    <% } else if ((currUser && currUser._id.equals(product.owner._id)) || currUser.username === 'admin') { %>
+                        
+                        <a href="/listings/edit/<%= product._id %>" class="btn btn-warning">Edit Product</a>
+                        <form action="/listings/delete/<%= product._id %>?_method=DELETE" method="post" style="display: inline;">
+                            <button class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete Product</button>
+                        </form>
+                    <% } else { %>
+                        <div class="alert btn-warning">Please log in to place a bid</div>
+                    <% } %>
+                <% } %>
+            </div>
+            
+            <!-- Navigation -->
+            <a href="/listings" class="btn btn-outline-primary">Back to Products</a>
+            
+            <!-- Bid History -->
+            <div class="bid-history mt-4">
+                <h5>Bid History</h5>
+                <% if (bids && bids.length > 0) { %>
+                    <ul class="list-group">
+                        <% bids.forEach(bid => { %>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>
+                                    <strong>₹<%= bid.amount %></strong> by 
+                                    <%= bid.bidder ? bid.bidder.username : 'Unknown User' %>
+                                </span>
+                                <small class="text-muted">
+                                    <%= bid.timestamp.toLocaleString() %>
+                                </small>
+                            </li>
+                        <% }) %>
+                    </ul>
+                <% } else { %>
+                    <p class="text-muted">No bids yet. Be the first to bid!</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Timer functionality for active auctions
+if (auctionStatus === 'active' && auctionEndTime) { 
+document.addEventListener('DOMContentLoaded', function() {
+    const endTime = new Date(auctionEndTime).getTime();
+    
+    function updateTimer() {
+        const now = new Date().getTime();
+        const timeLeft = endTime - now;
+        
+        if (timeLeft <= 0) {
+            document.getElementById('timer-display').innerHTML = '<h4>Auction Ended!</h4>';
+            setTimeout(() => location.reload(), 2000); // Refresh after 2 seconds
+            return;
+        }
+        
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        // Update individual elements
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        
+        // Add urgent styling when less than 1 minute left
+        if (timeLeft < 60000) {
+            document.querySelectorAll('.time-part').forEach(part => part.classList.add('urgent'));
+        }
+    }
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+});
+}
+// Start countdown when page loads
+
+ 
+</script>

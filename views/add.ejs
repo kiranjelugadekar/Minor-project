@@ -1,0 +1,76 @@
+<% layout('boilerplate') %>
+
+     <div id="productFormModal" class="d-flex justify-content-center align-items-center modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productFormTitle">Add New Product</h3>
+                <a href="/listings" class="modal-close">&times;</a>
+            </div>
+            <div class="modal-body">
+                <form id="productForm" class="product-form" method="post" action="/listings/add" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="form-label">Product Name</label>
+                        <input name="product[name]" type="text" id="productName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea name="product[description]" id="productDescription" class="form-control" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Starting Price (₹)</label>
+                            <input name="product[startingBid]" type="number" id="productStartingBid" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select name="product[category]" id="productCategory" class="form-control" required>
+                                <option value="">Select category</option>
+                                <option value="Industrial Equipment">Industrial Equipment</option>
+                                <option value="Storage Containers">Storage Containers</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Construction Materials">Construction Materials</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Vehicles">Vehicles</option>
+                                <option value="Machinery">Machinery</option>
+                                <option value="Office Supplies">Office Supplies</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Condition</label>
+                            <select name = "product[condition]" id="productCondition" class="form-control" required>
+                                <option value="">Select condition</option>
+                                <option value="Excellent">Excellent</option>
+                                <option value="Good">Good</option>
+                                <option value="Fair">Fair</option>
+                                <option value="Needs Repair">Needs Repair</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Quantity</label>
+                            <input name = "product[quantity]" type="number" id="productQuantity" class="form-control" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Product Image</label>
+                        <input name = "product[imageurl]" type="file" accept="image/*" />
+                        <input type="text" name="product[imageUrl]" placeholder="Or enter an image URL" />
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <a href="/listings" type="button" class="btn btn--secondary cancel-product">Cancel</a>
+                        <button type="submit" class="btn btn--primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    

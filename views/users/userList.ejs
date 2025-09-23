@@ -1,0 +1,37 @@
+<% layout('./boilerplate') %>
+<%- include('../includes/navbar') %>
+
+<h3 style="color: #1a6672; margin-left: 5rem;">User List</h3>
+<div class="container mt-4 ">
+
+    <div class="row">
+        <% users.forEach(user => { %>
+            
+            <div id="user-card" class="col-sm-4 mb-3"> 
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">User: <%= user.username %></h5>
+                        <p class="card-text">Email: <%= user.email %></p>
+                        <p class="card-text">Products listed: <%= user.productCount || 0 %></p>
+
+                        <form action="/users/remove/<%= user.id %>?_method=DELETE" method="post" style="display: inline;">
+                            <button class="btn btn-danger" onclick="return confirm('Are you sure you want to remove this user?')">Remove User</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+                
+        <% }) %>
+    </div>
+</div>
+
+<style>
+   #user-card{
+      margin-bottom: 1rem;
+   }
+   .card:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(5px);
+      transition: all 0.3s ease; 
+   }
+</style>

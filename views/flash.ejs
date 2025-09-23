@@ -1,0 +1,27 @@
+
+<% if(success && success.length) { %>
+    <div class = "alert alert-success position-absolute alert-dismissible fade show col-6  offset-3" role = "alert">
+        <%= success %>
+        <button 
+           type = "button" 
+           class = "btn-close row-1" 
+           data-bs-dismiss = "alert" 
+           aria-label = "Close" 
+           style = " padding-bottom: 0.1rem; padding-left: 0.5rem; padding-right: 0.5rem;"
+           onclick="this.parentElement.style.display='none';"
+        ></button>
+    </div>
+<% } %>
+
+<% if(error && error.length) { %>
+    <div class = "alert alert-danger alert-dismissible position-absolute fade show col-6  offset-3" role = "alert">
+        <%= error %>
+        <button 
+           type = "button" 
+           class = "btn-close row-1" 
+           data-bs-dismiss = "alert" 
+           aria-label = "Close" 
+           style = " padding-bottom: 0.1rem; padding-left: 0.5rem; padding-right: 0.5rem;"        
+        ></button>
+    </div>
+<% } %>

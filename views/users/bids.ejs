@@ -1,0 +1,81 @@
+<% layout('./boilerplate') %>
+
+    <%- include('../includes/navbar.ejs') %>
+
+<div class="container mt-4">
+    <h2>My Bids</h2>
+
+    <% if (bids && bids.length > 0) { %>
+        <div class="row">
+            <% bids.forEach(bid => { %>
+                <% if (bid.product) { %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="<%= bid.product.imageUrl || '/images/default-product.png' %>" class="card-img-top" alt="Product Image">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= bid.product.name %></h5>
+                                <p>Your Bid: ₹<%= bid.amount %></p>
+                                <p>Current Highest: ₹<%= bid.product.currentBid %></p>
+                                
+                                <% if (bid.status === 'won') { %>
+                                    <div class="alert alert-success">🏆 You Won This Auction!</div>
+                                <% } else if (bid.status === 'lost') { %>
+                                    <div class="alert alert-danger">❌ You Lost This Auction</div>
+                                <% } else if (bid.product.currentBid > bid.amount) { %>
+                                    <div class="alert alert-warning">⚠️ You've been outbid!</div>
+                                <% } else { %>
+                                    <div class="alert alert-info">🏆 You're the highest bidder!</div>
+                                <% } %>
+                                
+                                <a href="/listings/show/<%= bid.product._id %>" class="btn btn-secondary flex-grow-1">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Product Unavailable</h5>
+                                <p>Your Bid: ₹<%= bid.amount %></p>
+                                <div class="alert alert-warning">
+                                    ⚠️ This product is no longer available
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <div class="alert alert-info">You haven't placed any bids yet.</div>
+    <% } %>
+</div>
+<style>
+    .alert {
+        margin-left: 2rem ;
+        margin-bottom: 50px;
+    }
+    .btn {
+        background-color: #21808d;
+    }
+</style>
+<script>
+// Filter functionality
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Filter bid cards
+        const status = btn.dataset.status;
+        document.querySelectorAll('.bid-card').forEach(card => {
+            if (status === 'all' || card.dataset.status === status) {
+                card.style.display = 'grid';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>

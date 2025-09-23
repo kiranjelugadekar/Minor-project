@@ -1,0 +1,79 @@
+    <% layout('./boilerplate') %>
+<div>
+        <header class="app-header">
+            <div class="container">
+                <div class="header-content">
+                    <h2>E-Reusable Vendor Finder</h2>
+                    <div class="header-actions">
+                        <span id="userWelcome" class="user-welcome"></span>
+                        <% if(checkLog){ %>
+                            <form action="/logout" method = "post">
+                                <button  id="logoutBtn" class="nav-btn " >Logout</button>
+                            </form>
+                        <% } else { %>
+                            <form action="/signup" method = "get">
+                                <button  id="signupBtn" class="nav-btn " >Log In/Sign Up</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="app-nav position-sticky top-0 z-2">
+            <div class="container d-flex justify-content-between">
+                <div class="nav-items">
+                    <form action="/listings" method="get">
+                        <button class="nav-btn" id="dashboard-btn">Dashboard</button>
+                    </form>
+                    <% if (currUser && currUser.userType === 'user') { %>
+                       <form action="/user/bids">
+                            <button class="nav-btn" id="bids-btn">My Bids</button>
+                       </form>
+                    <% } else if (currUser && currUser.userType === 'admin') { %>
+                        <form action="/user/user" method ="get">
+                            <button class="nav-btn" id="bids-btn">Users</button>
+                       </form>
+                    <% } %>
+                    <form action="/products/history" method="get">
+                        <button class="nav-btn" id="history-btn">Bid History</button>
+                    </form>
+                </div>
+                <div >
+                    <form action="/listings/add" method="get">
+                        <button id="adminNavBtn" class="nav-btn hidden" type="submit">Sell Product</button>
+                    </form>
+                </div>
+                
+            </div>
+        </nav>
+</div>
+        <script>
+        // Set active nav button based on current page
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navButtons = document.querySelectorAll('.nav-btn[data-section]');
+            
+            // Remove active class from all nav buttons
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class based on current page
+            if (currentPath === '/listings' || currentPath === '') {
+                document.getElementById('dashboard-btn').classList.add('active');
+            } else if (currentPath === '/user/bids' || currentPath === '/user/user') {
+                document.getElementById('bids-btn').classList.add('active');
+            } else{
+                document.getElementById('history-btn').classList.add('active');
+            }
+            
+            // Handle nav button clicks
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active from all buttons
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    // Add active to clicked button
+                    this.classList.add('active');
+                });
+            });
+        });
+        </script>

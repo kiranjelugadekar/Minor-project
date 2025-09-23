@@ -1,0 +1,96 @@
+<% layout('./boilerplate') %>
+
+    <% if(success && success.length) { %>
+
+       <div class="alert alert-success col-6 offset-3" role="alert">
+    <%= success[0] %>
+    <button type="button" class="btn-close" aria-label="Close" style="text-align: end;" onclick="this.parentElement.style.display='none';">&times;</button>
+  </div>
+<% } %>
+
+<% if(error && error.length) { %>
+  <div class="alert alert-danger col-6 offset-3" style=" justify-content: space-between;" role="alert">
+    <%= error[0] %>
+    <button type="button" class="btn-close" aria-label="Close" onclick="this.parentElement.style.display='none';">❌</button>
+  </div>
+<% } %>
+
+
+    <div class="Login" >
+        <div class="container right-panel-active" id="container">
+            <div class="form-container sign-up-container" >
+                <form action="/signup" method="post">
+                    <h1>Create Account</h1>
+                    <label>Username:</label>
+                    <input type="text" name="user[username]" required/>
+                    <label>Email:</label>
+                    <input type="text" name="user[email]" required/>
+                    <label>Password:</label>
+                    <input type="password" name="user[password]" required/>
+                    <button type="submit">Sign in</button>
+                </form>
+            </div>
+
+            <div class="form-container sign-in-container">
+                <form action="/login" method="post">
+                    <h1>log in</h1>
+                    <label>Username:</label>
+                    <input type="text" name="username" required/>
+                    <label>Password:</label>
+                    <input type="password" name="password" required/>
+        
+                    <button type="submit">log In</button>
+                </form>
+            </div>
+
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>Welcome</h1>
+                        <img src="https://cdn-icons-png.flaticon.com/256/10399/10399884.png" style="width: 150px; margin-top: 20px;" alt="Welcome" />
+                        <br><br><br>
+                        <p>Log in to stay connected with us</p>
+                        <button class="ghost" id="signIn" type="button">Log In</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>Hello, again</h1>
+                        <img src="https://cdn-icons-png.flaticon.com/256/7376/7376495.png" style="width: 150px; margin-top: 20px;" alt="Hello" />
+                        <br><br><br>
+                        <p>Create a new account to connect with us</p>
+                        <button class="ghost" id="signUp" type="button">Sign In</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+  
+    <style>
+         body{
+            background-image: url('https://media.istockphoto.com/id/1372972509/photo/blue-green-background-dark-turquoise-gradient-hazy-painted-texture-with-black-bottom-and-teal.jpg?s=612x612&w=0&k=20&c=itnNn_-VPcFP-c208j-LlNNY3Po9K-K6h3bdteWnggo=');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        } 
+
+    </style>
+    
+
+     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('container');
+            const signUpButton = document.getElementById('signUp');
+            const signInButton = document.getElementById('signIn');
+
+            signUpButton.addEventListener('click', () => {
+                container.classList.add("right-panel-active");
+            });
+
+            signInButton.addEventListener('click', () => {
+                container.classList.remove("right-panel-active");
+            });
+        });
+    </script>
+    
+
