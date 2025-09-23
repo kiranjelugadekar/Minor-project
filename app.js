@@ -354,7 +354,7 @@ app.post('/listings/add', upload.single('product[imageurl]'), async (req, res) =
     }
 });
  
-app.get('/listings/show/:id', async (req, res) => {
+app.get('/listings/show/:id',isLoggedIn, async (req, res) => {
     try {
         
         const product = await Product.findById(req.params.id)
