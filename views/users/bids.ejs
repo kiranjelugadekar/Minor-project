@@ -1,9 +1,10 @@
 <% layout('./boilerplate') %>
 
-    <%- include('../includes/navbar.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+<section id="dashboardSection" class="app-section active z-1">
+<h3 style="color: #1a6672; margin-left: 5rem;">My Bids</h3>
 
 <div class="container mt-4">
-    <h2>My Bids</h2>
 
     <% if (bids && bids.length > 0) { %>
         <div class="row">
@@ -50,6 +51,7 @@
         <div class="alert alert-info">You haven't placed any bids yet.</div>
     <% } %>
 </div>
+</section>
 <style>
     .alert {
         margin-left: 2rem ;

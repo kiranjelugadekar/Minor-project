@@ -1,8 +1,11 @@
 <% layout('boilerplate')%>
 <%- include('./includes/navbar') %>
+ <section id="dashboardSection" class="app-section active z-1">
+
+<h3 style="color: #1a6672; margin-left: 5rem;">Bid History (Ended Auctions)</h3>
 
 <div class="container mt-4">
-    <h2>Bid History (Ended Auctions)</h2>
+    
     <% if (products.length > 0) { %>
         <div class="row g-4">
             <% products.forEach(product => { %>
@@ -19,7 +22,7 @@
                                     </span>
                                 </div>
                                 <small class="text-muted">
-                                    Bid by <%= product.lastBidder.username %> on <%= product.lastBidTimestamp %>
+                                    winner is <%= product.lastBidder.username %> 
                                 </small>
                             </div>
                         </div>
@@ -34,9 +37,9 @@
         <div class="alert alert-info" style="margin-left: 2rem;">No ended auction products found.</div>
     <% } %>
 </div>
-
+</section>
 <style>
-/* Styling similar to index.ejs cards */
+
 .card {
     transition: transform 0.2s, box-shadow 0.2s;
 }

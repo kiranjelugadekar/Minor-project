@@ -1,202 +1,133 @@
 <% layout('boilerplate') %>
 <%- include('./includes/navbar') %>
 
-    <section id="dashboardSection" class="app-section active z-1">
-        <h3 style="color: #1a6672; margin-left: 5rem;">Available Products</h3>
-        <div class="container mt-4">
-                
-            
-            <div class="row g-5">
-                <% products.forEach(product => { %>
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100">
-                            <span class="text-alert fs-5">
+<section id="dashboardSection" class="app-section active z-1">
+    <div class="container">
+
+        
+        <!-- Add responsive filters -->
+        <div class="row mb-4 mx-1 mx-md-3">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <input type="text" id="searchProducts" class="form-control" placeholder="Search products...">
+            </div>
+            <div class="col-md-6">
+                <select id="statusFilter" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row g-3 g-md-4">
+            <% products.forEach(product => { %>
+                <div class="col-12 col-sm-6 col-lg-4 mb-3" data-status="<%= product.auctionStatus %>">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge <%= product.auctionStatus === 'active' ? 'bg-success' : 'bg-warning' %>">
                                 <%= product.auctionStatus %>
                             </span>
-                            <img src="<%= product.imageUrl %>" 
-                                 class="card-img-top" 
-                                 alt="<%= product.name %>"
-                                 style="height: 150px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title"><%= product.name %></h5>
-                                <p class="card-text"><%= product.description %></p>
-                                
-                                <div class="bid-info mb-3">
-                                    <div class="current-bid">
-
-                                       <% if(product.auctionStatus === 'active'){ %>
+                        </div>
+                        <img src="<%= product.imageUrl %>" 
+                             class="card-img-top" 
+                             alt="<%= product.name %>"
+                             style="height: 180px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate"><%= product.name %></h5>
+                            <p class="card-text" style="height: 48px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                <%= product.description %>
+                            </p>
+                            
+                            <div class="bid-info mb-3">
+                                <div class="current-bid">
+                                    <% if(product.auctionStatus === 'active'){ %>
                                         <strong>Current Bid:</strong>
-                                        <span class="text-success fs-5">
-                                            ₹<%= product.currentBid  %>
-                                        </span>
+                                        <span class="text-success fs-5">₹<%= product.currentBid %></span>
                                     <% } else { %>
                                         <strong>Starting Bid:</strong>
-                                        <span class="text-success fs-5">
-                                            ₹<%= product.startingBid  %>
-                                        </span>
-                                        <% } %>
-
-                                    </div>
-                                    <% if (product.lastBidder) { %>
-                                        <small class="text-muted">
-                                            Last bid by <%= product.lastBidder.username %>
-                                        </small>
+                                        <span class="text-success fs-5">₹<%= product.startingBid %></span>
                                     <% } %>
                                 </div>
+                                <% if (product.lastBidder) { %>
+                                    <small class="text-muted">
+                                        Last bid by <%= product.lastBidder.username %>
+                                    </small>
+                                <% } %>
                             </div>
+                        </div>
 
-                            <div class="card-footer bg-transparent">
-                                <div class="d-flex gap-2">
-                                    <a href="/listings/show/<%= product._id %>" 
-                                       class="btn btn-outline-primary flex-grow-1">
-                                        View Details
-                                    </a>
-                                    
-                                    <% if (currUser && !currUser._id.equals(product.createdBy)) { %>
-                                        <button type="button" 
-                                                class="btn btn-primary flex-grow-1"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#bidModal<%= product._id %>">
-                                            Place Bid
-                                        </button>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex flex-column flex-sm-row gap-2">
+                                <a href="/listings/show/<%= product._id %>" 
+                                   class="btn btn-outline-primary flex-grow-1">
+                                    View Details
+                                </a>
+                                
+                                <% if (currUser && !(currUser._id.equals(product.owner))) { %>
+                                    <button type="button" 
+                                            class="btn btn-primary flex-grow-1"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#bidModal<%= product._id %>">
+                                        Place Bid
+                                    </button>
 
-                                        <!-- Bid Modal -->
-                                        <div class="modal fade" 
-                                             id="bidModal<%= product._id %>" 
-                                             tabindex="-1" 
-                                             aria-labelledby="bidModalLabel<%= product._id %>" 
-                                             aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" 
-                                                            id="bidModalLabel<%= product._id %>">
-                                                            Place Bid for <%= product.name %>
-                                                        </h5>
-                                                        <button type="button" 
-                                                                class="btn-close" 
-                                                                data-bs-dismiss="modal" 
-                                                                aria-label="Close"></button>
-                                                    </div>
-                                                    <form action="/products/<%= product._id %>/bid" 
-                                                          method="POST" 
-                                                          onsubmit="return validateBid(this)">
-                                                        <div class="modal-body">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">
-                                                                    Current Highest Bid: 
-                                                                    ₹<%= product.currentBid || product.startingBid %>
-                                                                </label>
-                                                                <input type="number" 
-                                                                       name="amount" 
-                                                                       class="form-control" 
-                                                                       min="<%= (product.currentBid || product.startingBid) + 50 %>"
-                                                                       required>
-                                                                <div class="form-text">
-                                                                    Minimum bid: ₹<%= (product.currentBid || product.startingBid) + 50 %>
-                                                                </div>
+                                    <!-- Bid Modal -->
+                                    <div class="modal fade" id="bidModal<%= product._id %>">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Place Bid for <%= product.name %></h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form action="/products/<%= product._id %>/bid" method="POST" onsubmit="return validateBid(this)">
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">
+                                                                Current Highest Bid: 
+                                                                ₹<%= product.currentBid || product.startingBid %>
+                                                            </label>
+                                                            <input type="number" 
+                                                                   name="amount" 
+                                                                   class="form-control" 
+                                                                   min="<%= (product.currentBid || product.startingBid) + 50 %>"
+                                                                   required>
+                                                            <div class="form-text">
+                                                                Minimum bid: ₹<%= (product.currentBid || product.startingBid) + 50 %>
                                                             </div>
                                                         </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" 
-                                                                    class="btn btn-secondary" 
-                                                                    data-bs-dismiss="modal">Close</button>
-                                                            <button type="submit" 
-                                                                    class="btn btn-primary">Place Bid</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Place Bid</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
-                                    <% } %>
-                                </div>
+                                    </div>
+                                <% } %>
                             </div>
                         </div>
                     </div>
-                <% }); %>
-            </div>
-            
+                </div>
+            <% }); %>
         </div>
-    </section>
-
-
-
-<script>
-    
-function validateBid(form) {
-    const amount = parseInt(form.amount.value);
-    const minBid = parseInt(form.amount.min);
-    
-    if (amount < minBid) {
-        alert(`Bid must be at least ₹${minBid}`);
-        return false;
-    }
-    return true;
-}
-
-// Filter and search functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const statusFilter = document.getElementById('statusFilter');
-    const searchInput = document.getElementById('searchProducts');
-    const products = document.querySelectorAll('.col-md-4');
-
-    function filterProducts() {
-        const status = statusFilter.value.toLowerCase();
-        const search = searchInput.value.toLowerCase();
-
-        products.forEach(product => {
-            const productName = product.querySelector('.card-title').textContent.toLowerCase();
-            const productStatus = product.dataset.status || 'active';
-            
-            const matchesStatus = !status || productStatus === status;
-            const matchesSearch = !search || productName.includes(search);
-
-            product.style.display = matchesStatus && matchesSearch ? '' : 'none';
-        });
-    }
-
-    statusFilter.addEventListener('change', filterProducts);
-    searchInput.addEventListener('input', filterProducts);
-});
-
-// Show flash message in modal if there's a bid error
- if (error && error.includes('bid')) { 
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = new bootstrap.Modal(document.getElementById('bidModal<%= error_product_id %>'));
-        modal.show();
-    });
- } 
-</script>
+    </div>
+</section>
 
 <style>
-    
 .app-section {
-    padding: 2rem 0;
+    padding: 1rem 0;
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.section-actions {
-    display: flex;
-    gap: 1rem;
-}
-
-.filter-select {
-    min-width: 150px;
-}
-
-.search-input {
-    min-width: 200px;
+@media (min-width: 768px) {
+    .app-section {
+        padding: 2rem 0;
+    }
 }
 
 .card {
     transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
 }
 
 .card:hover {
@@ -204,7 +135,31 @@ document.addEventListener('DOMContentLoaded', function() {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Disable card hover when modal is open */
+/* Better card styling on mobile */
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Consistent card heights */
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.bid-info {
+    margin-top: auto;
+}
+
 body.modal-open .card:hover {
     transform: none;
     box-shadow: none;
@@ -212,6 +167,14 @@ body.modal-open .card:hover {
 
 .current-bid {
     font-size: 1.1rem;
+}
+
+/* Responsive buttons */
+@media (max-width: 576px) {
+    .card-footer .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
 }
 
 .btn-primary {
@@ -234,25 +197,61 @@ body.modal-open .card:hover {
     border-color: #21808d;
 }
 
-.modal-content {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: transform;
-}
-
-@media (max-width: 768px) {
-    .section-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .section-actions {
-        flex-direction: column;
-    }
-    
-    .filter-select,
-    .search-input {
-        width: 100%;
+/* Mobile-friendly modals */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
     }
 }
 </style>
+
+<script>
+function validateBid(form) {
+    const amount = parseInt(form.amount.value);
+    const minBid = parseInt(form.amount.min);
+    
+    if (amount < minBid) {
+        alert(`Bid must be at least ₹${minBid}`);
+        return false;
+    }
+    return true;
+}
+
+// Filter and search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('statusFilter');
+    const searchInput = document.getElementById('searchProducts');
+    const products = document.querySelectorAll('[data-status]');
+
+    function filterProducts() {
+        const status = statusFilter.value.toLowerCase();
+        const search = searchInput.value.toLowerCase();
+
+        products.forEach(product => {
+            const productName = product.querySelector('.card-title').textContent.toLowerCase();
+            const productStatus = product.dataset.status || 'active';
+            
+            const matchesStatus = !status || productStatus === status;
+            const matchesSearch = !search || productName.includes(search);
+
+            product.style.display = matchesStatus && matchesSearch ? '' : 'none';
+        });
+    }
+
+    if (statusFilter && searchInput) {
+        statusFilter.addEventListener('change', filterProducts);
+        searchInput.addEventListener('input', filterProducts);
+    }
+});
+
+// Show flash message in modal if there's a bid error
+if (typeof error !== 'undefined' && error && error.includes('bid')) { 
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalElement = document.getElementById('bidModal<%= error_product_id %>');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+    });
+}
+</script>

@@ -1,5 +1,5 @@
-    <% layout('./boilerplate') %>
-<div>
+    <% layout('boilerplate')%>
+
         <header class="app-header">
             <div class="container">
                 <div class="header-content">
@@ -20,7 +20,7 @@
             </div>
         </header>
 
-        <nav class="app-nav position-sticky top-0 z-2">
+        <nav class="app-nav ">
             <div class="container d-flex justify-content-between">
                 <div class="nav-items">
                     <form action="/listings" method="get">
@@ -47,7 +47,14 @@
                 
             </div>
         </nav>
-</div>
+
+<style>
+    .app-nav{
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+</style>
         <script>
         // Set active nav button based on current page
         document.addEventListener('DOMContentLoaded', function() {

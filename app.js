@@ -170,14 +170,14 @@ async function endAuction(productId) {
         product.auctionStatus = 'ended';
         await product.save();
 
-        console.log(`Auction ended for product: ${product.name}`);
+        
     } catch (error) {
         console.error('Error ending auction:', error);
     }
 }
 
 // Run auction check every 60 seconds
-setInterval(checkExpiredAuctions, 60000);
+setInterval(checkExpiredAuctions, 1000);
 
 
 
@@ -257,8 +257,8 @@ app.post('/signup', async (req, res, next) => {
               res.redirect('/listings');
               });
     } catch (e) {
-              req.flash("success", e.message);
-              console.log(e);
+              req.flash("error", e.message);
+             
               res.redirect('/signup');
           }
       }
@@ -482,7 +482,6 @@ app.post('/products/:id/bid', isLoggedIn, async (req, res) => {
             product.auctionStartTime = now;
             product.auctionEndTime = new Date(now.getTime() + product.auctionDuration);
             product.auctionStatus = 'active';
-            console.log(`Auction started for product ${product.name}. Ends at: ${product.auctionEndTime}`);
             await product.save();
         }
 
