@@ -1,79 +1,96 @@
-<% 'boilerplate' %>
+<% layout('boilerplate') %>
 <%- include('includes/navbar') %>
-<div class="container mt-4">
- <div class="row g-4 ">
-    <% products.forEach( product => { %>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <span class = 'text-alert fs-5'>
-                    <%= product.auctionStatus %>
-                </span>
-                <img src="<%= product.imageUrl %>" class="card-img-top" alt="<%= product.name %>" style="height: 200px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="card-title"><%= product.name %></h5>
-                    <p class="card-text"><%= product.description %></p>
 
-                    <div class="bid-info mb-3">
-                        <div class="current-bid">
-                           <% if(product.auctionStatus === 'active'){ %>
-                                        <strong>Current Bid:</strong>
-                                        <span class="text-success fs-5">
-                                            ₹<%= product.currentBid  %>
-                                        </span>
-                                    <% } else { %>
-                                        <strong>Starting Bid:</strong>
-                                        <span class="text-success fs-5">
-                                            ₹<%= product.startingBid  %>
-                                        </span>
-                                    <% } %>
-                        </div>
-                        <% if (product.lastBidder) { %>
-                            <small class="text-muted">
-                                Last bid by <%= product.lastBidder.username %>
-                            </small>
-                        <% } %>
-                    </div>
-                </div>
-                <div class=" justify-content-left align-items-center" style="margin: 1rem;">
-                        <form action="/listings/delete/<%= product._id %>?_method=DELETE" method="post" style="display: inline;">
-                            <button class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete Product</button>
-                        </form>
-                        <a href="/listings/show/<%= product._id %>" class="btn btn-primary flex-grow-1">View details</a>
-                </div>
+<section id="dashboardSection" class="app-section active z-1">
+    <div class="container">
+        
+        
+        <!-- Add responsive filters -->
+        <div class="row mb-4 mx-1 mx-md-3">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <input type="text" id="searchProducts" class="form-control" placeholder="Search products...">
+            </div>
+            <div class="col-md-6">
+                <select id="statusFilter" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                </select>
             </div>
         </div>
-    <% }) %>
-</div>
-</div>
-                  
+        
+        <div class="row g-3 g-md-4">
+            <% products.forEach(product => { %>
+                <div class="col-12 col-sm-6 col-lg-4 mb-3" data-status="<%= product.auctionStatus %>">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge <%= product.auctionStatus === 'active' ? 'bg-success' : 'bg-warning' %>">
+                                <%= product.auctionStatus %>
+                            </span>
+                        </div>
+                        <img src="<%= product.imageUrl %>" 
+                             class="card-img-top" 
+                             alt="<%= product.name %>"
+                             style="height: 180px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate"><%= product.name %></h5>
+                            <p class="card-text" style="height: 48px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                <%= product.description %>
+                            </p>
+                            
+                            <div class="bid-info mb-3">
+                                <div class="current-bid">
+                                    <% if(product.auctionStatus === 'active'){ %>
+                                        <strong>Current Bid:</strong>
+                                        <span class="text-success fs-5">₹<%= product.currentBid %></span>
+                                    <% } else { %>
+                                        <strong>Starting Bid:</strong>
+                                        <span class="text-success fs-5">₹<%= product.startingBid %></span>
+                                    <% } %>
+                                </div>
+                                <% if (product.lastBidder) { %>
+                                    <small class="text-muted">
+                                        Last bid by <%= product.lastBidder.username %>
+                                    </small>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex flex-column gap-2">
+                                <div class="d-flex gap-2">
+                                    <a href="/listings/show/<%= product._id %>" class="btn btn-outline-primary flex-grow-1">
+                                        View Details
+                                    </a>
+                                    <form action="/listings/delete/<%= product._id %>?_method=DELETE" method="post" class="flex-grow-1">
+                                        <button class="btn btn-danger w-100" onclick="return confirm('Are you sure you want to delete this product?')">
+                                            Delete Product
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</section>
+
 <style>
 .app-section {
-    padding: 2rem 0;
+    padding: 1rem 0;
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.section-actions {
-    display: flex;
-    gap: 1rem;
-}
-
-.filter-select {
-    min-width: 150px;
-}
-
-.search-input {
-    min-width: 200px;
+@media (min-width: 768px) {
+    .app-section {
+        padding: 2rem 0;
+    }
 }
 
 .card {
     transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
 }
 
 .card:hover {
@@ -81,7 +98,31 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Disable card hover when modal is open */
+/* Better card styling on mobile */
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Consistent card heights */
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.bid-info {
+    margin-top: auto;
+}
+
 body.modal-open .card:hover {
     transform: none;
     box-shadow: none;
@@ -89,6 +130,14 @@ body.modal-open .card:hover {
 
 .current-bid {
     font-size: 1.1rem;
+}
+
+/* Responsive buttons */
+@media (max-width: 576px) {
+    .card-footer .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
 }
 
 .btn-primary {
@@ -111,25 +160,49 @@ body.modal-open .card:hover {
     border-color: #21808d;
 }
 
-.modal-content {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: transform;
+/* Mobile-friendly modals */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
 }
 
-@media (max-width: 768px) {
-    .section-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .section-actions {
-        flex-direction: column;
-    }
-    
-    .filter-select,
-    .search-input {
-        width: 100%;
-    }
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
 }
 </style>
+
+<script>
+// Filter and search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('statusFilter');
+    const searchInput = document.getElementById('searchProducts');
+    const products = document.querySelectorAll('[data-status]');
+
+    function filterProducts() {
+        const status = statusFilter.value.toLowerCase();
+        const search = searchInput.value.toLowerCase();
+
+        products.forEach(product => {
+            const productName = product.querySelector('.card-title').textContent.toLowerCase();
+            const productStatus = product.dataset.status || 'active';
+            
+            const matchesStatus = !status || productStatus === status;
+            const matchesSearch = !search || productName.includes(search);
+
+            product.style.display = matchesStatus && matchesSearch ? '' : 'none';
+        });
+    }
+
+    if (statusFilter && searchInput) {
+        statusFilter.addEventListener('change', filterProducts);
+        searchInput.addEventListener('input', filterProducts);
+    }
+});
+</script>
