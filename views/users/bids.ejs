@@ -19,9 +19,9 @@
                                 <p>Current Highest: ₹<%= bid.product.currentBid %></p>
                                 
                                 <% if (bid.status === 'won') { %>
-                                    <div class="alert alert-success">🏆 You Won This Auction!</div>
+                                    <div class="alert alert-success" style="z-index: 1;">🏆 You Won This Auction!</div>
                                 <% } else if (bid.status === 'lost') { %>
-                                    <div class="alert alert-danger">❌ You Lost This Auction</div>
+                                    <div class="alert alert-danger" style="z-index: 1;">❌ You Lost This Auction</div>
                                 <% } else if (bid.product.currentBid > bid.amount) { %>
                                     <div class="alert alert-warning">⚠️ You've been outbid!</div>
                                 <% } else { %>

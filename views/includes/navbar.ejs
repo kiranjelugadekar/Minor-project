@@ -6,6 +6,7 @@
                     <h2>E-Reusable Vendor Finder</h2>
                     <div class="header-actions">
                         <span id="userWelcome" class="user-welcome"></span>
+                        
                         <% if(checkLog){ %>
                             <form action="/logout" method = "post">
                                 <button  id="logoutBtn" class="nav-btn " >Logout</button>
@@ -69,7 +70,7 @@
                 document.getElementById('dashboard-btn').classList.add('active');
             } else if (currentPath === '/user/bids' || currentPath === '/user/user') {
                 document.getElementById('bids-btn').classList.add('active');
-            } else{
+            } else if (currentPath === '/products/history') {
                 document.getElementById('history-btn').classList.add('active');
             }
             

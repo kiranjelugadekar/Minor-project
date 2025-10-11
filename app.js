@@ -177,7 +177,7 @@ async function endAuction(productId) {
 }
 
 // Run auction check every 60 seconds
-setInterval(checkExpiredAuctions, 1000);
+setInterval(checkExpiredAuctions, 100);
 
 
 
@@ -368,11 +368,12 @@ app.get('/listings/show/:id',isLoggedIn, async (req, res) => {
             .populate('bidder', 'username')
             .sort({ timestamp: -1 });
         
-        
+        const checkLog = req.isAuthenticated();
         res.render('show', { 
             product, 
             bids,
-            currUser
+            currUser,
+            checkLog
         });
         
 
