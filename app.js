@@ -229,7 +229,7 @@ setInterval(async () => {
     } catch (error) {
         console.error('Error checking auction status:', error);
     }
-}, 60000); // Check every minute
+}, 1000); // Check every second
 
 app.get('/', (req, res) => {
     res.redirect('/listings');
