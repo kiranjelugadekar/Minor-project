@@ -8,6 +8,7 @@
 </script>
 
 <div class="container-fluid py-4">
+    
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
             <!-- Back Button -->
@@ -85,13 +86,13 @@
                                 <div class="card-body">
                                     <% if (product.auctionStatus === 'pending') { %>
                                         <div class="auction-status text-center py-4">
-                                            <div class="display-1 mb-3">⏳</div>
+                                            <div class="display-1 mb-3">⏳<i class="fi fi-bs-hourglass-end"></i></div>
                                             <h4 class="text-warning">Waiting for First Bid</h4>
                                             <p class="text-muted">Auction will start when someone places the first bid</p>
                                         </div>
                                     <% } else if (product.auctionStatus === 'active') { %>
                                         <div class="auction-active text-center">
-                                            <h4 class="text-success mb-3">🔥 Auction Active</h4>
+                                            <h4 class="text-success mb-3"> Auction Active</h4>
                                             <%if(product.auctionEndTime){ %> 
                                                 <div class="countdown-timer" data-end-time="<%= product.auctionEndTime.toISOString() %>">
                                             <% }else{ %>
@@ -122,11 +123,11 @@
                                         </div>
                                     <% } else { %>
                                         <div class="auction-ended text-center py-4">
-                                            <div class="display-1 mb-3">🏁</div>
+                                            <div class="display-1 mb-3"></div>
                                             <h4 class="text-danger">Auction Ended</h4>
                                             <% if (product.winner) { %>
                                                 <div class="winner-info mt-3 p-3 bg-light rounded">
-                                                    <h6 class="text-success">🎉 Winner: <%= product.winner.username %></h6>
+                                                    <h6 class="text-success"> Winner: <%= product.winner.username %></h6>
                                                     <h5 class="text-primary">Winning Bid: ₹<%= product.winningBid %></h5>
                                                 </div>
                                             <% } else { %>
@@ -142,7 +143,7 @@
                         <div class="col-12">
                             <div class="card shadow-sm">
                                 <div class="card-body">
-                                    <h5 class="card-title mb-4">💰 Bidding Information</h5>
+                                    <h5 class="card-title mb-4"> Bidding Information</h5>
                                     
                                     <div class="row g-3 mb-4">
                                         <div class="col-6">
@@ -167,9 +168,9 @@
                                                     <div class="form-group mb-3">
                                                         <label class="form-label fw-semibold">
                                                             <% if (product.auctionStatus === 'pending') { %>
-                                                                🚀 Your Bid Amount (₹) - Start the Auction!
+                                                                 Your Bid Amount (₹) - Start the Auction!
                                                             <% } else { %>
-                                                                📈 Your Bid Amount (₹)
+                                                                 Your Bid Amount (₹)
                                                             <% } %>
                                                         </label>
                                                         <div class="input-group">
@@ -187,28 +188,28 @@
                                                     </div>
                                                     <% if (product.auctionStatus === 'pending') { %>
                                                         <button type="submit" class="btn btn-success btn-lg w-100">
-                                                            🎯 Place First Bid & Start Auction!
+                                                             Place First Bid & Start Auction!
                                                         </button>
                                                     <% } else { %>
                                                         <button type="submit" class="btn btn-primary btn-lg w-100">
-                                                            💪 Place Bid
+                                                             Place Bid
                                                         </button>
                                                     <% } %>
                                                 </form>
                                             <% } else if ((currUser && currUser._id.equals(product.owner._id)) || currUser.userType === 'admin') { %>
                                                 <div class="admin-actions d-grid gap-2">
                                                     <a href="/listings/edit/<%= product._id %>" class="btn btn-warning btn-lg">
-                                                        ✏️ Edit Product
+                                                         Edit Product
                                                     </a>
                                                     <form action="/listings/delete/<%= product._id %>?_method=DELETE" method="post">
                                                         <button class="btn btn-danger btn-lg w-100" onclick="return confirm('Are you sure you want to delete this product?')">
-                                                            🗑️ Delete Product
+                                                             Delete Product
                                                         </button>
                                                     </form>
                                                 </div>
                                             <% } else { %>
                                                 <div class="alert alert-warning text-center">
-                                                    <h6>🔒 Please log in to place a bid</h6>
+                                                    <h6> Please log in to place a bid</h6>
                                                     <a href="/signup" class="btn btn-primary">Login / Sign Up</a>
                                                 </div>
                                             <% } %>
@@ -226,7 +227,7 @@
                 <div class="col-12">
                     <div class="card shadow-sm">
                         <div class="card-header text-white" style="background-color: #21808d;">
-                            <h5 class="mb-0">📋 Bid History</h5>
+                            <h5 class="mb-0"> Bid History</h5>
                         </div>
                         <div class="card-body">
                             <% if (bids && bids.length > 0) { %>
